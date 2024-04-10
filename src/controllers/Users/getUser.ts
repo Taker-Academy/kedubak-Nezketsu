@@ -1,11 +1,13 @@
 import { ObjectId } from "mongodb";
 const jwt = require('jsonwebtoken');
+import { getEnvVariables } from "../../index";
 
 
 export async function getUserController(req: any, res: any) {
   try {
     const { db } = req.app;
     const { email, password } = req.body;
+    const { jwt_pass } = getEnvVariables();
 
     if (!email || !password) {
       console.log(email, password);
@@ -29,7 +31,7 @@ export async function getUserController(req: any, res: any) {
     const options = {
       expiresIn: '24h' // Le token expirera après 1 heure
     };
-    const token = jwt.sign(payload, "caca", options);
+    const token = jwt.sign(payload, jwt_pass, options);
     res.json({ ok: true, data: { token, user: send} });
   }
   catch(error) {

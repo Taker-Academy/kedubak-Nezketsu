@@ -1,15 +1,19 @@
 import { MongoClient, ObjectId } from 'mongodb'; // Assurez-vous d'importer ObjectId
+import { getEnvVariables } from "../../index";
 const jwt = require('jsonwebtoken');
+
 
 export async function deleteUserController(req: any, res: any) {
     try {
         const { db } = req.app;
+        const { jwt_pass } = getEnvVariables();
+        console.log(jwt_pass);
         const authHeader = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ message: 'Accès refusé. Token manquant ou mal formé.' });
         }
         const token = authHeader.substring(7);
-        let decoded = jwt.verify(token, 'caca'); // Utilisez la clé secrète réelle ici
+        let decoded = jwt.verify(token, jwt_pass); // Utilisez la clé secrète réelle ici
         const userId = decoded.userId;
         console.log(userId);
         const userToDelete = await db.collection('users').findOne({ _id: new ObjectId(userId) });

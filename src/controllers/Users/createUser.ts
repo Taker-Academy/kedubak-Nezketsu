@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-
+import { getEnvVariables } from "../../index";
 const jwt = require('jsonwebtoken');
 
 export async function createUserController(req: any, res: any) {
@@ -7,6 +7,7 @@ export async function createUserController(req: any, res: any) {
     const { db } = req.app;
 
     const { password, firstName, email, lastName } = req.body;
+    const { jwt_pass } = getEnvVariables();
 
     if (!password || !firstName || !email || !lastName) {
       return res.status(400).json({ message: 'Name is required' });
@@ -38,12 +39,11 @@ export async function createUserController(req: any, res: any) {
     }
     const payload = {
       userId: result.insertedId,
-      // Vous pouvez également inclure d'autres données si nécessaire
     };
     const options = {
       expiresIn: '24h' // Le token expirera après 1 heure
     };
-    const token = jwt.sign(payload, "caca", options);
+    const token = jwt.sign(payload, jwt_pass, options);
     console.log(result.insertedId);
     if (result.acknowledged) {
       res.json({ ok: true, data: { token, user: send } });
@@ -52,7 +52,6 @@ export async function createUserController(req: any, res: any) {
     }
   }
   catch(error) {
-    console.log('caca');
     res.status(500).json({ error: error.toString() });
   }
 }

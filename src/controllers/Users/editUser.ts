@@ -1,13 +1,17 @@
 import { MongoClient, ObjectId } from 'mongodb'; // Assurez-vous d'importer ObjectId
 const jwt = require('jsonwebtoken');
+import { getEnvVariables } from "../../index";
+
+
 
 export async function editUserController(req: any, res: any) {
     try {
         const { db } = req.app;
         const authHeader = req.headers['authorization'];
+        const { jwt_pass } = getEnvVariables();
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.substring(7);
-            const decoded = jwt.verify(token, 'caca');
+            const decoded = jwt.verify(token, jwt_pass);
             const id = decoded.userId;
 
             const ID = new ObjectId(id);

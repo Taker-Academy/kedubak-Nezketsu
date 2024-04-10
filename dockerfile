@@ -1,18 +1,18 @@
-FROM node:14
+FROM node:16-alpine
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY tsconfig.json ./
 
 RUN npm install
 
 COPY . .
 
-# Installez les dépendances du projet
-RUN npm install
+RUN npm run build
 
-# Copiez le reste des fichiers du projet dans le conteneur
-COPY . .
+EXPOSE 8080
 
-# Exécutez l'application avec npm start
+ENV NODE_ENV production
+
 CMD ["npm", "start"]

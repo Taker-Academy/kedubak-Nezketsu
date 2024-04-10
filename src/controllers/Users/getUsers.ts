@@ -1,17 +1,19 @@
 const jwt = require('jsonwebtoken');
 import { MongoClient, ObjectId } from 'mongodb'; // Assurez-vous d'importer ObjectId
+import { getEnvVariables } from "../../index";
 
 
 export async function getUsersController(req: any, res: any) {
   try {
     const { db } = req.app;
+    const { jwt_pass } = getEnvVariables();
 
     const result = await db.collection('users').find().toArray();
     const authHeader = req.headers['authorization'];
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
         try {
-          jwt.verify(token, 'caca');
+          jwt.verify(token, jwt_pass);
         } catch (error) {
           return res.status(403).json({ message: 'Accès refusé. Token invalide.' });
         }
